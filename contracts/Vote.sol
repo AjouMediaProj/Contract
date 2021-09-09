@@ -37,6 +37,7 @@ contract Vote {
     }
     
     function vote(uint _candIdx) public {
+        // test commit
         candidateInfoes[_candIdx].voteCnt += 1;
     }
 }
