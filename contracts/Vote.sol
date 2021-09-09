@@ -33,12 +33,10 @@ contract Vote {
     }
     
     function addVote(uint _idx, string memory _name, uint[] memory candidates) public {
-        // test commit2
         voteInfoes[_idx] = VoteInfo(_idx, _name, candidates);
     }
     
     function vote(uint _candIdx) public {
-        // test commit
         candidateInfoes[_candIdx].voteCnt += 1;
     }
 }
