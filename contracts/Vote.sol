@@ -29,6 +29,7 @@ contract Vote {
     }
     
     function addCandidate(uint _idx, string memory _name) public {
+        // test commit3
         candidateInfoes[_idx] = CandidateInfo(_idx, _name, 0);
     }
     
