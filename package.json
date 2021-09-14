@@ -13,6 +13,8 @@
   },
   "homepage": "https://github.com/AjouMediaProj/Contract#readme",
   "dependencies": {
+    "prettier": "^2.4.0",
+    "prettier-plugin-solidity": "^1.0.0-beta.18",
     "truffle-hdwallet-provider-klaytn": "1.4.1"
   }
 }
