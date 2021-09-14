@@ -21,3 +21,7 @@ lerna-debug.log\*
 node_modules/
 jspm_packages/
 yarn.lock
+
+# Config File
+
+config.js
