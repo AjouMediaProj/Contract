@@ -17,7 +17,7 @@ contract Vote {
     }
 
     // prettier-ignore
-    function getVote(uint _idx) public view returns (uint256 voteIdx, string memory voteName, uint256[] memory candIdxes) {
+    function getVote(uint256 _idx) public view returns (uint256 voteIdx, string memory voteName, uint256[] memory candIdxes) {
         voteIdx = _idx;
         voteName = voteInfoes[_idx].name;
         candIdxes = voteInfoes[_idx].candidateIdxes;
