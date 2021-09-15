@@ -51,3 +51,11 @@ Cypress MainNet
 ```
 truffle deploy --reset --network mainnet
 ```
+
+## VS Code Prettier Setting
+
+- Search 'Prettier - Code formatter' in VS Code Extension
+- Go to VS Code Setting(ctrl + ,)
+- Set Default Formatter to 'prettier-vscode'
+- Check 'Format On Save'
+- Edit .prettierrc file for detail setting
