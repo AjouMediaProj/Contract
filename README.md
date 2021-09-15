@@ -43,11 +43,11 @@ Klaytn Account With 1 Klay Required
 Baobab TestNet
 
 ```
-truffle deploy --network testnet
+truffle deploy --reset --network testnet
 ```
 
 Cypress MainNet
 
 ```
-truffle deploy --network mainnet
+truffle deploy --reset --network mainnet
 ```
