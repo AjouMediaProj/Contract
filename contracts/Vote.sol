@@ -124,6 +124,7 @@ contract Vote is Ownable {
         return isValid;
     }
 
+    // VSCode Commit Test
     function _validVoteCandidate(uint256 voteIdx, uint256 candIdx) internal view returns (bool) {
         bool isValid = false;
 
