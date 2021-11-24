@@ -16,9 +16,15 @@ contract Vote is Ownable {
         uint256 idx;
         string name;
         uint256 voteCnt;
+        uint8 status;
     }
 
     enum VoteStatus {
+        enable,
+        disable
+    }
+
+    enum CandidateStatus {
         enable,
         disable
     }
@@ -32,6 +38,8 @@ contract Vote is Ownable {
 
     event AddVote(uint256 idx, string name, uint256 startTime, uint256 endTime); // prettier-ignore
     event AddCandidate(uint256 idx, string name);
+    event UpdateVote(uint256 idx, string name, uint256 startTime, uint256 endTime, uint8 status); // prettier-ignore
+    event UpdateCandidate(uint256 idx, string name, uint8 status);
 
     function _generateVoteIdx() internal returns (uint256) {
         return ++_voteIdx;
@@ -51,7 +59,7 @@ contract Vote is Ownable {
             uint256 totalVoteCnt,
             uint256 startTime,
             uint256 endTime,
-            uint256 status
+            uint8 status
         )
     {
         voteIdx = idx;
@@ -69,12 +77,14 @@ contract Vote is Ownable {
         returns (
             uint256 candIdx,
             string memory candName,
-            uint256 voteCnt
+            uint256 voteCnt,
+            uint8 status
         )
     {
         candIdx = idx;
         candName = _candidateInfoes[idx].name;
         voteCnt = _candidateInfoes[idx].voteCnt;
+        status = _candidateInfoes[idx].status;
     }
 
     // prettier-ignore
@@ -94,7 +104,7 @@ contract Vote is Ownable {
 
         // create candidateInfo
         uint256 idx = _generateCandidateIdx();
-        _candidateInfoes[idx] = CandidateInfo(idx, name, 0);
+        _candidateInfoes[idx] = CandidateInfo(idx, name, 0, uint8(VoteStatus.enable));
 
         // add idx into voteInfo
         _voteInfoes[voteIdx].candidateIdxes.push(idx);
@@ -137,9 +147,20 @@ contract Vote is Ownable {
         return isValid;
     }
 
+    function _validCandidateStatus(uint256 candIdx) internal view returns (bool) {
+        bool isValid = false;
+
+        if (_candidateInfoes[candIdx].status == uint8(CandidateStatus.enable)) {
+            isValid = true;
+        }
+
+        return isValid;
+    }
+
     // prettier-ignore
     function vote(uint256 voteIdx, uint256 candIdx, bool renounce) external onlyOwner {
         require(_validVoteStatus(voteIdx) == true, "invalid vote status");
+        require(_validCandidateStatus(candIdx) == true, "invalid candidate status");
         require(_validVoteTime(voteIdx) == true, "invalid vote time");
         if (!renounce) {
             require(_validVoteCandidate(voteIdx, candIdx) == true, "voteIdx & candIdx missmatch");
@@ -149,5 +170,43 @@ contract Vote is Ownable {
         if (!renounce) {
             _candidateInfoes[candIdx].voteCnt += 1;
         }
+    }
+
+    // prettier-ignore
+    function updateVote(uint256 voteIdx, string calldata name, uint256 startTime, uint256 endTime, uint8 status) external onlyOwner returns (bool) {
+        require(keccak256(bytes(_voteInfoes[voteIdx].name)) != keccak256(""), "Invalid Vote Index");
+
+        _voteInfoes[voteIdx].name = name;
+        _voteInfoes[voteIdx].startTime = startTime;
+        _voteInfoes[voteIdx].endTime = endTime;
+        _voteInfoes[voteIdx].status = status;
+
+        emit UpdateVote(voteIdx, name, startTime, endTime, status);
+
+        return true;
+    }
+
+    // prettier-ignore
+    function updateCandidate(uint256 voteIdx, uint256 candIdx, string calldata name, uint8 status) external onlyOwner returns (bool) {
+        require(keccak256(bytes(_voteInfoes[voteIdx].name)) != keccak256(""), "Invalid Vote Index");
+        require(keccak256(bytes(_candidateInfoes[candIdx].name)) != keccak256(""), "Invalid Candidate Index");
+
+        _candidateInfoes[candIdx].name = name;
+        _candidateInfoes[candIdx].status = status;
+
+        // remove candidate index in voteInfo
+        if (status == uint8(CandidateStatus.disable)) {
+            for (uint256 i = 0; i < _voteInfoes[voteIdx].candidateIdxes.length; i++) {
+                if (_voteInfoes[voteIdx].candidateIdxes[i] == candIdx) {
+                    _voteInfoes[voteIdx].candidateIdxes[i] = _voteInfoes[voteIdx].candidateIdxes[_voteInfoes[voteIdx].candidateIdxes.length - 1];
+                    _voteInfoes[voteIdx].candidateIdxes.pop();
+                    break;
+                }
+            }
+        }
+
+        emit UpdateCandidate(candIdx, name, status);
+
+        return true;
     }
 }
